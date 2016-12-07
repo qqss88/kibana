@@ -8,11 +8,13 @@ import 'ui/directives/infinite_scroll';
 import 'ui/doc_table/components/table_header';
 import 'ui/doc_table/components/table_row';
 import uiModules from 'ui/modules';
+import RegistryFieldFormatsProvider from 'ui/registry/field_formats';
 
 
 
 uiModules.get('kibana')
-.directive('docTable', function (config, Notifier, getAppState, courier) {
+.directive('docTable', function (config, Notifier, getAppState, Private) {
+  let fieldFormats = Private(RegistryFieldFormatsProvider);
   return {
     restrict: 'E',
     template: html,
@@ -131,8 +133,8 @@ uiModules.get('kibana')
         }
 
         function formatField(value, name) {
-          var defaultFormat = courier.indexPatterns.fieldFormats.defaultByType.string;
           var field = $scope.indexPattern.fields.byName[name];
+          var defaultFormat = fieldFormats.getDefaultType(field.type);
           var formatter = (field && field.format) ? field.format : defaultFormat;
 
           return formatter.convert(value);
